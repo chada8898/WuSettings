@@ -1,0 +1,13 @@
+packages
+.vs
+obj
+bin
+*.bak
+*.csproj.user
+Resources.Designer.cs
+Settings.Designer.cs
+*.sln.cache
+*.suo
+*.nuget.props
+*.pdb
+*.exe
