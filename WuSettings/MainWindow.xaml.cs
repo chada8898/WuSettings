@@ -9,11 +9,11 @@ namespace WuSettings
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private ViewModel vm;
+		private MainWindowViewModel vm;
 
 		public MainWindow()
 		{
-			vm = new ViewModel();
+			vm = new MainWindowViewModel();
 			vm.Initialize();
 			InitializeComponent();
 			Loaded += WindowLoaded;

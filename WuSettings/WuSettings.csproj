@@ -86,7 +86,7 @@
     </ApplicationDefinition>
     <Compile Include="LocalGroupPolicy.cs" />
     <Compile Include="ValidationRules.cs" />
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="MainWindowViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
