@@ -223,7 +223,6 @@ namespace WuSettings
 			{
 				SetRegistryValue(@"SOFTWARE\Microsoft\WindowsUpdate\UX\Settings", "DeferFeatureUpdatesPeriodInDays", deferFeatureUpdates, RegistryValueKind.DWord);
 
-				SetGroupPolicy(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "PauseFeatureUpdatesStartTime", null);
 				SetGroupPolicy(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "DeferFeatureUpdates", (deferFeatureUpdates > 0) ? 1 : 0);
 				SetGroupPolicy(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "DeferFeatureUpdatesPeriodInDays", deferFeatureUpdates);
 			}
@@ -244,7 +243,6 @@ namespace WuSettings
 			{
 				SetRegistryValue(@"SOFTWARE\Microsoft\WindowsUpdate\UX\Settings", "DeferQualityUpdatesPeriodInDays", deferQualityUpdates, RegistryValueKind.DWord);
 
-				SetGroupPolicy(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "PauseQualityUpdatesStartTime", null);
 				SetGroupPolicy(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "DeferQualityUpdates", (deferQualityUpdates > 0) ? 1 : 0);
 				SetGroupPolicy(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate", "DeferQualityUpdatesPeriodInDays", deferQualityUpdates);
 			}
