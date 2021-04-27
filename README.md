@@ -9,7 +9,7 @@ For Windows 10 Home, the group policies do not get set, but the corresponding po
 No installation.  Just copy the EXE file to any directory you want and run it.
 
 ## Usage
-Wusetting.exe - There are no command line arguments.
+WuSettings.exe - There are no command line arguments.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit) - Copy the source code and do whatever you want with it.
