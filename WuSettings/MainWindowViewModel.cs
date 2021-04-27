@@ -46,7 +46,7 @@ namespace WuSettings
 				}
 				else
 				{
-					SendPropertyChanged(nameof(DeferQualityUpdates));
+					SendPropertyChanged();
 				}
 			}
 		}
@@ -64,7 +64,7 @@ namespace WuSettings
 				}
 				else
 				{
-					SendPropertyChanged(nameof(ActiveHoursStart));
+					SendPropertyChanged();
 				}
 			}
 		}
@@ -82,7 +82,7 @@ namespace WuSettings
 				}
 				else
 				{
-					SendPropertyChanged(nameof(ActiveHoursEnd));
+					SendPropertyChanged();
 				}
 			}
 		}
@@ -99,7 +99,7 @@ namespace WuSettings
 				}
 				else
 				{
-					SendPropertyChanged(nameof(DownloadOnly));
+					SendPropertyChanged();
 				}
 			}
 		}
@@ -116,7 +116,7 @@ namespace WuSettings
 				}
 				else
 				{
-					SendPropertyChanged(nameof(ExcludeDriverUpdates));
+					SendPropertyChanged();
 				}
 			}
 		}
@@ -133,7 +133,7 @@ namespace WuSettings
 				}
 				else
 				{
-					SendPropertyChanged(nameof(UpdateOtherMsProducts));
+					SendPropertyChanged();
 				}
 			}
 		}
