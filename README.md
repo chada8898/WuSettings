@@ -2,7 +2,7 @@
 
 WuSettings is a C# WPF program to set Windows 10 Windows Update registry keys and group policies.  It runs on any version of Windows 10 as long as .Net Framework 4.5 or greater is installed.
 
-For Windows 10 Home, the group policies do not get set, but the corresponding policy registry keys do get set.  This should allow most of these policy settings to be obeyed on Windows 10 Home too.  I only did limited testing on Windows 10 Home, so it a policy setting does not work on Home, you have been warned.
+For Windows 10 Home, the group policies do not get set, but the corresponding policy registry keys do get set.  This should allow most of these policy settings to be obeyed on Windows 10 Home too.  I only did limited testing on Windows 10 Home, so if a policy setting does not work on Windows 10 Home, you have been warned.
 
 ## Installation
 
