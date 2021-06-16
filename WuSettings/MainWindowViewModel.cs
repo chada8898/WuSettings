@@ -155,6 +155,23 @@ namespace WuSettings
 			}
 		}
 
+		private bool disableNewsFeeds;
+		public bool DisableNewsFeeds
+		{
+			get => disableNewsFeeds;
+			set
+			{
+				if (SaveDisableNewsFeeds(value))
+				{
+					SetProperty(ref disableNewsFeeds, value);
+				}
+				else
+				{
+					SendPropertyChanged();
+				}
+			}
+		}
+
 		public void Initialize()
 		{
 			try
@@ -205,6 +222,12 @@ namespace WuSettings
 				{
 					string productName = key?.GetValue("ProductName") as string;
 					isWindows10HomeVersion = productName?.Contains(" Home") ?? false;
+				}
+
+				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"))
+				{
+					bool enableFeeds = (key?.GetValue("EnableFeeds") as int? ?? 1) > 0;
+					disableNewsFeeds = !enableFeeds;
 				}
 
 				SetHiddenProperties();
@@ -345,6 +368,21 @@ namespace WuSettings
 			{
 				SetGroupPolicy(@"Software\Policies\Microsoft\Windows\WindowsUpdate", "TargetReleaseVersion", Convert.ToInt32(isVersionTargeted));
 				SetGroupPolicy(@"Software\Policies\Microsoft\Windows\WindowsUpdate", "TargetReleaseVersionInfo", targetReleaseVersionInfo);
+			}
+			catch (GPRegException e)
+			{
+				MessageBox.Show(e.Message, Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+				return false;
+			}
+
+			return true;
+		}
+
+		private bool SaveDisableNewsFeeds(bool disableNewsFeeds)
+		{
+			try
+			{
+				SetGroupPolicy(@"Software\Policies\Microsoft\Windows\Windows Feeds", "EnableFeeds", Convert.ToInt32(!disableNewsFeeds));
 			}
 			catch (GPRegException e)
 			{
