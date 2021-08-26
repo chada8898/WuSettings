@@ -64,7 +64,8 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
-			</Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>
 				<ColumnDefinition Width="Auto"/>
@@ -76,11 +77,12 @@
 			<Label Grid.Row="4" Style="{StaticResource LabelStyle}" Content="Active Hours End"/>
 			<Label Grid.Row="5" Style="{StaticResource LabelStyle}"/>
 			<Label Grid.Row="6" Style="{StaticResource LabelStyle}" Content="Disable News Feeds"/>
-			<Label Grid.Row="7" Style="{StaticResource LabelStyle}" Content="Download Only"/>
-			<Label Grid.Row="8" Style="{StaticResource LabelStyle}" Content="Exclude Driver Updates"/>
-			<Label Grid.Row="9" Style="{StaticResource LabelStyle}" Content="Update Other MS Products"/>
-			<Label Grid.Row="10" Style="{StaticResource LabelStyle}"/>
-			<Label Grid.Row="11" Style="{StaticResource LabelStyle}" Content="Target Windows 10 Version"/>
+            <Label Grid.Row="7" Style="{StaticResource LabelStyle}" Content="Disable Windows Suggestions"/>
+            <Label Grid.Row="8" Style="{StaticResource LabelStyle}" Content="Download Only"/>
+			<Label Grid.Row="9" Style="{StaticResource LabelStyle}" Content="Exclude Driver Updates"/>
+			<Label Grid.Row="10" Style="{StaticResource LabelStyle}" Content="Update Other MS Products"/>
+			<Label Grid.Row="11" Style="{StaticResource LabelStyle}"/>
+			<Label Grid.Row="12" Style="{StaticResource LabelStyle}" Content="Target Windows 10 Version"/>
 			<TextBox x:Name="DeferFeatureUpdates"
 					 Grid.Row="0" Grid.Column="1" Style="{StaticResource TextBoxStyleWithErrors}"
 					 MaxLength="3" PreviewTextInput="TextBox_PreviewNumericOnly">
@@ -123,10 +125,11 @@
 				</TextBox.Text>
 			</TextBox>
 			<CheckBox Grid.Row="6" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding DisableNewsFeeds}"/>
-			<CheckBox Grid.Row="7" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding DownloadOnly}"/>
-			<CheckBox Grid.Row="8" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding ExcludeDriverUpdates}"/>
-			<CheckBox Grid.Row="9" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding UpdateOtherMsProducts}"/>
-			<TextBox Grid.Row="11" Grid.Column="1" Style="{StaticResource TextBoxStyleWithErrors}"
+            <CheckBox Grid.Row="7" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding DisableWindowsSuggestions}"/>
+            <CheckBox Grid.Row="8" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding DownloadOnly}"/>
+			<CheckBox Grid.Row="9" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding ExcludeDriverUpdates}"/>
+			<CheckBox Grid.Row="10" Grid.Column="1" Style="{StaticResource CheckBoxStyle}" IsChecked="{Binding UpdateOtherMsProducts}"/>
+			<TextBox Grid.Row="12" Grid.Column="1" Style="{StaticResource TextBoxStyleWithErrors}"
 					 MaxLength="4" CharacterCasing="Upper" PreviewTextInput="TextBox_PreviewAlphaNumericOnly">
 				<TextBox.Text>
 					<Binding Path="TargetReleaseVersionInfo" Mode="TwoWay" UpdateSourceTrigger="Default">

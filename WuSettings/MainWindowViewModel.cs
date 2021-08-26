@@ -172,6 +172,23 @@ namespace WuSettings
 			}
 		}
 
+		private bool disableWindowsSuggestions;
+		public bool DisableWindowsSuggestions
+		{
+			get => disableWindowsSuggestions;
+			set
+			{
+				if (SaveDisableWindowsSuggestions(value))
+				{
+					SetProperty(ref disableWindowsSuggestions, value);
+				}
+				else
+				{
+					SendPropertyChanged();
+				}
+			}
+		}
+
 		public void Initialize()
 		{
 			try
@@ -228,6 +245,12 @@ namespace WuSettings
 				{
 					bool enableFeeds = (key?.GetValue("EnableFeeds") as int? ?? 1) > 0;
 					disableNewsFeeds = !enableFeeds;
+				}
+
+				using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement"))
+				{
+					bool enableSuggestions = (key?.GetValue("ScoobeSystemSettingEnabled ") as int? ?? 0) > 0;
+					disableWindowsSuggestions = !enableSuggestions;
 				}
 
 				SetHiddenProperties();
@@ -393,18 +416,39 @@ namespace WuSettings
 			return true;
 		}
 
-		private void SetRegistryValue(string subkey, string name, object value, RegistryValueKind valueKind)
+		private bool SaveDisableWindowsSuggestions(bool disableSuggestions)
 		{
 			try
 			{
-				using (RegistryKey key = Registry.LocalMachine.CreateSubKey(subkey))
+				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement", "ScoobeSystemSettingEnabled",
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-310093Enabled",
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338388Enabled",
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338389Enabled",
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+			}
+			catch (GPRegException e)
+			{
+				MessageBox.Show(e.Message, Resources.Error, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+				return false;
+			}
+
+            return true;
+		}
+
+		private void SetRegistryValue(string subkey, string name, object value, RegistryValueKind valueKind, RegistryKey hive = null)
+		{
+			try
+			{
+				using (RegistryKey key = (hive ?? Registry.LocalMachine).CreateSubKey(subkey))
 				{
 					key?.SetValue(name, value, valueKind);
 				}
 			}
 			catch (Exception e)
 			{
-				//MessageBox.Show(e.GetType().Name + ": " + e.Message);
 				throw new GPRegException(e.GetType().Name + ": " + e.Message);
 			}
 		}
