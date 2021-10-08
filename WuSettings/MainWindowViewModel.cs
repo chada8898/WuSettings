@@ -193,64 +193,72 @@ namespace WuSettings
 		{
 			try
 			{
-				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"))
+				using (var regLocalMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64) ??
+											 RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32))
 				{
-					if (key?.GetValue("DeferFeatureUpdates") as int? > 0)
+					using (RegistryKey key = regLocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"))
 					{
-						deferFeatureUpdates = key.GetValue("DeferFeatureUpdatesPeriodInDays")?.ToString();
+						if (key?.GetValue("DeferFeatureUpdates") as int? > 0)
+						{
+							deferFeatureUpdates = key.GetValue("DeferFeatureUpdatesPeriodInDays")?.ToString();
+						}
+
+						if (key?.GetValue("DeferQualityUpdates") as int? > 0)
+						{
+							deferQualityUpdates = key.GetValue("DeferQualityUpdatesPeriodInDays")?.ToString();
+						}
+
+						excludeDriverUpdates = key?.GetValue("ExcludeWUDriversInQualityUpdate") as int? > 0;
+						branchReadinessLevel = key?.GetValue("BranchReadinessLevel") as int? ?? 0;
+						managePreviewBuilds = key?.GetValue("ManagePreviewBuilds") as int? ?? -1;
+						bool isTargetReleaseVersion = key?.GetValue("TargetReleaseVersion") as int? > 0;
+						targetReleaseVersionInfo = isTargetReleaseVersion ? key?.GetValue("TargetReleaseVersionInfo") as string : null;
 					}
 
-					if (key?.GetValue("DeferQualityUpdates") as int? > 0)
+					using (RegistryKey key = regLocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\WindowsUpdate\UX\Settings"))
 					{
-						deferQualityUpdates = key.GetValue("DeferQualityUpdatesPeriodInDays")?.ToString();
+						activeHoursStart = key?.GetValue("ActiveHoursStart")?.ToString();
+						activeHoursEnd = key?.GetValue("ActiveHoursEnd")?.ToString();
+
+						if (string.IsNullOrEmpty(deferFeatureUpdates))
+						{
+							deferFeatureUpdates = key?.GetValue("DeferFeatureUpdatesPeriodInDays")?.ToString();
+						}
+
+						if (string.IsNullOrEmpty(deferQualityUpdates))
+						{
+							deferQualityUpdates = key?.GetValue("DeferQualityUpdatesPeriodInDays")?.ToString();
+						}
 					}
 
-					excludeDriverUpdates = key?.GetValue("ExcludeWUDriversInQualityUpdate") as int? > 0;
-					branchReadinessLevel = key?.GetValue("BranchReadinessLevel") as int? ?? 0;
-					managePreviewBuilds = key?.GetValue("ManagePreviewBuilds") as int? ?? -1;
-					bool isTargetReleaseVersion = key?.GetValue("TargetReleaseVersion") as int? > 0;
-					targetReleaseVersionInfo = isTargetReleaseVersion ? key?.GetValue("TargetReleaseVersionInfo") as string : null;
-				}
-
-				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\WindowsUpdate\UX\Settings"))
-				{
-					activeHoursStart = key?.GetValue("ActiveHoursStart")?.ToString();
-					activeHoursEnd = key?.GetValue("ActiveHoursEnd")?.ToString();
-
-					if (string.IsNullOrEmpty(deferFeatureUpdates))
+					using (RegistryKey key = regLocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"))
 					{
-						deferFeatureUpdates = key?.GetValue("DeferFeatureUpdatesPeriodInDays")?.ToString();
+						downloadOnly = (key?.GetValue("AUOptions") as int? == 2);
+						noAutoUpdate = key?.GetValue("NoAutoUpdate") as int? ?? -1;
+						updateOtherMsProducts = (key?.GetValue("AllowMUUpdateService") as int? > 0);
 					}
 
-					if (string.IsNullOrEmpty(deferQualityUpdates))
+					using (RegistryKey key = regLocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
 					{
-						deferQualityUpdates = key?.GetValue("DeferQualityUpdatesPeriodInDays")?.ToString();
+						string productName = key?.GetValue("ProductName") as string;
+						isWindows10HomeVersion = productName?.Contains(" Home") ?? false;
+					}
+
+					using (RegistryKey key = regLocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"))
+					{
+						bool enableFeeds = (key?.GetValue("EnableFeeds") as int? ?? 1) > 0;
+						disableNewsFeeds = !enableFeeds;
 					}
 				}
 
-				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"))
+				using (var regCurrentUser = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64) ??
+											RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32))
 				{
-					downloadOnly = (key?.GetValue("AUOptions") as int? == 2);
-					noAutoUpdate = key?.GetValue("NoAutoUpdate") as int? ?? -1;
-					updateOtherMsProducts = (key?.GetValue("AllowMUUpdateService") as int? > 0);
-				}
-
-				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
-				{
-					string productName = key?.GetValue("ProductName") as string;
-					isWindows10HomeVersion = productName?.Contains(" Home") ?? false;
-				}
-
-				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Policies\Microsoft\Windows\Windows Feeds"))
-				{
-					bool enableFeeds = (key?.GetValue("EnableFeeds") as int? ?? 1) > 0;
-					disableNewsFeeds = !enableFeeds;
-				}
-
-				using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement"))
-				{
-					bool enableSuggestions = (key?.GetValue("ScoobeSystemSettingEnabled ") as int? ?? 0) > 0;
-					disableWindowsSuggestions = !enableSuggestions;
+					using (RegistryKey key = regCurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement"))
+					{
+						bool enableSuggestions = (key?.GetValue("ScoobeSystemSettingEnabled ") as int? ?? 0) > 0;
+						disableWindowsSuggestions = !enableSuggestions;
+					}
 				}
 
 				SetHiddenProperties();
@@ -421,13 +429,13 @@ namespace WuSettings
 			try
 			{
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement", "ScoobeSystemSettingEnabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-310093Enabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338388Enabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338389Enabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, Registry.CurrentUser);
+								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
 			}
 			catch (GPRegException e)
 			{
@@ -438,13 +446,17 @@ namespace WuSettings
             return true;
 		}
 
-		private void SetRegistryValue(string subkey, string name, object value, RegistryValueKind valueKind, RegistryKey hive = null)
+		private void SetRegistryValue(string subkey, string name, object value, RegistryValueKind valueKind, RegistryHive hive = RegistryHive.LocalMachine)
 		{
 			try
 			{
-				using (RegistryKey key = (hive ?? Registry.LocalMachine).CreateSubKey(subkey))
+				using (var regBaseKey = RegistryKey.OpenBaseKey(hive, RegistryView.Registry64) ??
+										RegistryKey.OpenBaseKey(hive, RegistryView.Registry32))
 				{
-					key?.SetValue(name, value, valueKind);
+					using (RegistryKey key = regBaseKey.CreateSubKey(subkey))
+					{
+						key?.SetValue(name, value, valueKind);
+					}
 				}
 			}
 			catch (Exception e)
