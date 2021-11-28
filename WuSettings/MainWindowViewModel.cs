@@ -467,10 +467,8 @@ namespace WuSettings
 
 		private void SetGroupPolicy(string key, string name, int dwordValue)
 		{
-			if (isWindows10HomeVersion)
-			{
-				SetRegistryValue(key, name, dwordValue, RegistryValueKind.DWord);
-			}
+			SetRegistryValue(key, name, dwordValue, RegistryValueKind.DWord);
+			if (isWindows10HomeVersion) return;
 
 			Task.Delay(10);
 			bool success = localGroupPolicy.SetGroupPolicy(key, name, null, dwordValue);
@@ -479,11 +477,9 @@ namespace WuSettings
 
 		private void SetGroupPolicy(string key, string name, string stringValue)
 		{
-			if (isWindows10HomeVersion)
-			{
-				if (stringValue == null) stringValue = string.Empty;
-				SetRegistryValue(key, name, stringValue, RegistryValueKind.String);
-			}
+			if (stringValue == null) stringValue = string.Empty;
+			SetRegistryValue(key, name, stringValue, RegistryValueKind.String);
+			if (isWindows10HomeVersion) return;
 
 			Task.Delay(10);
 			bool success = localGroupPolicy.SetGroupPolicy(key, name, stringValue, null);
