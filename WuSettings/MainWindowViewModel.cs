@@ -256,7 +256,7 @@ namespace WuSettings
 				{
 					using (RegistryKey key = regCurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\UserProfileEngagement"))
 					{
-						bool enableSuggestions = (key?.GetValue("ScoobeSystemSettingEnabled ") as int? ?? 0) > 0;
+						bool enableSuggestions = (key?.GetValue("ScoobeSystemSettingEnabled") as int? ?? 0) > 0;
 						disableWindowsSuggestions = !enableSuggestions;
 					}
 				}
@@ -426,16 +426,18 @@ namespace WuSettings
 
 		private bool SaveDisableWindowsSuggestions(bool disableSuggestions)
 		{
+			int enableSuggestions = Convert.ToInt32(!disableSuggestions);
+
 			try
 			{
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement", "ScoobeSystemSettingEnabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
+								 enableSuggestions, RegistryValueKind.DWord, RegistryHive.CurrentUser);
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-310093Enabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
+								 enableSuggestions, RegistryValueKind.DWord, RegistryHive.CurrentUser);
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338388Enabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
+								 enableSuggestions, RegistryValueKind.DWord, RegistryHive.CurrentUser);
 				SetRegistryValue(@"Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager", "SubscribedContent-338389Enabled",
-								 Convert.ToInt32(!disableSuggestions), RegistryValueKind.DWord, RegistryHive.CurrentUser);
+								 enableSuggestions, RegistryValueKind.DWord, RegistryHive.CurrentUser);
 			}
 			catch (GPRegException e)
 			{
@@ -507,6 +509,9 @@ namespace WuSettings
 					managePreviewBuilds = 0;
 					SetGroupPolicy(@"Software\Policies\Microsoft\Windows\WindowsUpdate", "ManagePreviewBuilds", managePreviewBuilds);
 				}
+
+				// Do not allow Microsoft PC Health Check to install
+				SetRegistryValue(@"SOFTWARE\Microsoft\PCHC", "PreviousUninstall", 1, RegistryValueKind.DWord);
 			}
 			catch (GPRegException e)
 			{
